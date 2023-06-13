@@ -1,11 +1,10 @@
 from llama_index import download_loader, SimpleDirectoryReader, ServiceContext, LLMPredictor, GPTVectorStoreIndex, PromptHelper, StorageContext, load_index_from_storage
 from pathlib import Path
-import openai
 import os
 from langchain import OpenAI
 from langchain.chat_models import ChatOpenAI
 from fastapi import FastAPI
-import uvicorn 
+import uvicorn
 
 
 key = os.getenv("OPENAI_API_KEY")
