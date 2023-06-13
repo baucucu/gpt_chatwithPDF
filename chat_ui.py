@@ -1,19 +1,31 @@
 from llama_index import download_loader, ServiceContext, LLMPredictor, GPTVectorStoreIndex, StorageContext, load_index_from_storage
+from llama_index.callbacks import CallbackManager, LlamaDebugHandler
 from pathlib import Path
 import os
 import streamlit as st
 from streamlit_chat import message
 from langchain.chat_models import ChatOpenAI
 import openai
+from dotenv import load_dotenv
 
-openai.api_key = "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"
-# os.environ['OPENAI_API_KEY'] = "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"
-llm_predictor = LLMPredictor(llm=ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo"))
-service_context = ServiceContext.from_defaults(llm_predictor=llm_predictor)
+load_dotenv()
+
+key = os.getenv('OPENAI_API_KEY')
+os.environ['OPENAI_API_KEY'] = key
+openai.api_key = key
+print(key)
+
+llama_debug = LlamaDebugHandler(print_trace_on_end=True)
+callback_manager = CallbackManager([llama_debug])
+
+llm = ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo")
+llm_predictor = LLMPredictor(llm=llm)
+service_context = ServiceContext.from_defaults(llm_predictor=llm_predictor, chunk_size=512, callback_manager=callback_manager)
 
 PATH_TO_DOCS = r'C:\Users\Alexandru Raduca\Proiecte\chatpdf\gpt_chatwithPDF\docs'
 PATH_TO_PDFS = r'C:\Users\Alexandru Raduca\Proiecte\chatpdf\gpt_chatwithPDF\pdfs'
 PATH_TO_INDEXES = r'C:\Users\Alexandru Raduca\Proiecte\chatpdf\gpt_chatwithPDF\indexes'
+
 if not os.path.exists(PATH_TO_INDEXES):
     os.makedirs(PATH_TO_INDEXES)
 
